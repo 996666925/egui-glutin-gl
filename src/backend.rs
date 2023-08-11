@@ -1,7 +1,7 @@
 pub use egui_winit;
 
-use egui_winit::winit::event_loop::EventLoopWindowTarget;
-use glutin::event::WindowEvent;
+use egui_winit::{winit::event_loop::EventLoopWindowTarget, EventResponse};
+use winit::{event::WindowEvent, window::Window};
 
 use super::painter::Painter;
 
@@ -17,16 +17,14 @@ pub struct EguiBackend {
     textures_delta: egui::TexturesDelta,
 }
 
-type Display = glutin::ContextWrapper<glutin::PossiblyCurrent, glutin::window::Window>;
-
 impl EguiBackend {
-    pub fn new<E>(display: &Display, event_loop: &EventLoopWindowTarget<E>) -> Self {
+    pub fn new<E>(window: &Window, event_loop: &EventLoopWindowTarget<E>) -> Self {
         let painter = Painter::new();
 
         let mut egui_winit = egui_winit::State::new(event_loop);
         egui_winit.set_max_texture_side(2048);
-
-        let pixels_per_point = display.window().scale_factor() as f32;
+        
+        let pixels_per_point = window.scale_factor() as f32;
         egui_winit.set_pixels_per_point(pixels_per_point);
 
         Self {
@@ -38,16 +36,16 @@ impl EguiBackend {
         }
     }
 
-    pub fn on_event(&mut self, event: &WindowEvent<'_>) -> bool {
+    pub fn on_event(&mut self, event: &WindowEvent<'_>) -> EventResponse {
         self.egui_winit.on_event(&self.egui_ctx, event)
     }
 
     pub fn run(
         &mut self,
-        display: &Display,
+        window: &Window,
         run_ui: impl FnMut(&egui::Context),
     ) -> std::time::Duration {
-        let raw_input = self.egui_winit.take_egui_input(display.window());
+        let raw_input = self.egui_winit.take_egui_input(window);
         let egui::FullOutput {
             platform_output,
             repaint_after,
@@ -56,7 +54,7 @@ impl EguiBackend {
         } = self.egui_ctx.run(raw_input, run_ui);
 
         self.egui_winit
-            .handle_platform_output(display.window(), &self.egui_ctx, platform_output);
+            .handle_platform_output(window, &self.egui_ctx, platform_output);
 
         self.shapes = shapes;
         self.textures_delta.append(textures_delta);
@@ -65,13 +63,13 @@ impl EguiBackend {
     }
 
     /// Paint the results of the last call to [`Self::run`].
-    pub fn paint(&mut self, display: &Display) {
+    pub fn paint(&mut self, window: &Window) {
         let shapes = std::mem::take(&mut self.shapes);
         let textures_delta = std::mem::take(&mut self.textures_delta);
         let clipped_primitives = self.egui_ctx.tessellate(shapes);
 
         let pixels_per_point = self.egui_ctx.pixels_per_point();
-        let screen_size_px = display.window().inner_size().into();
+        let screen_size_px = window.inner_size().into();
 
         self.painter.paint_and_update_textures(
             screen_size_px,
