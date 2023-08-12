@@ -18,3 +18,4 @@ mod vao;
 
 pub use backend::EguiBackend;
 pub use context_free_backend::EguiContextFreeBackend;
+pub use egui_winit::*;

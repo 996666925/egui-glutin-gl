@@ -22,5 +22,5 @@ vec4 srgba_gamma_from_linear(vec4 rgba) {
 void main() {
 
   vec4 texture_in_gamma = srgba_gamma_from_linear(texture(u_sampler, v_tc));
-  gl_FragColor = v_rgba_in_gamma * texture_in_gamma;
+  f_color = v_rgba_in_gamma * texture_in_gamma;
 }
