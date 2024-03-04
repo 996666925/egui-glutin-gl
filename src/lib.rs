@@ -12,10 +12,8 @@
 #![allow(clippy::manual_range_contains)]
 
 mod backend;
-mod context_free_backend;
 mod painter;
 mod vao;
 
 pub use backend::EguiBackend;
-pub use context_free_backend::EguiContextFreeBackend;
 pub use egui_winit::*;

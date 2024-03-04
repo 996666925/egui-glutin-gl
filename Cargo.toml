@@ -8,11 +8,14 @@ version = "0.19.0"
 
 [dependencies]
 bytemuck = "1.7.2"
-egui = {version = "0.22.0", features = ["bytemuck"]}
-egui-winit = {version = "0.22.0", default-features = false, features = ["clipboard", "links"]}
-gl = {git = "https://github.com/996666925/gl"}
-glutin = "0.30.9"
+egui = { version = "0.26.2", features = ["bytemuck"] }
+egui-winit = { version = "0.26.2", default-features = false, features = [
+    "clipboard",
+    "links",
+] }
+gl = { git = "https://github.com/996666925/gl" }
+glutin = "0.31.3"
 log = "0.4.14"
 memoffset = "0.6"
 puffin = ">=0.12"
-winit = "0.28.6"
+winit = "0.29.13"
