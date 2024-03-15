@@ -17,3 +17,4 @@ mod vao;
 
 pub use backend::EguiBackend;
 pub use egui_winit::*;
+pub use painter::CallbackFn;
